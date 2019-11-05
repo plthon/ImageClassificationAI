@@ -30,19 +30,6 @@ models = {
     "mlp": MLPClassifier()
 }
 
-# define the dictionary of models our script can use, where the key
-# to the dictionary is the name of the model (supplied via command
-# line argument) and the value is the model itself
-models = {
-    "knn": KNeighborsClassifier(n_neighbors=1),
-    "naive_bayes": GaussianNB(),
-    "logit": LogisticRegression(solver="lbfgs", multi_class="auto"),
-    "svm": SVC(kernel="rbf", gamma="auto"),
-    "decision_tree": DecisionTreeClassifier(),
-    "random_forest": RandomForestClassifier(n_estimators=100),
-    "mlp": MLPClassifier()
-}
-
 # load the Iris dataset and perform a training and testing split,
 # using 75% of the data for training and 25% for evaluation
 print("[INFO] loading data...")

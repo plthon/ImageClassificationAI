@@ -1,4 +1,6 @@
 # import the necessary packages
+from keras.datasets import mnist
+from keras.utils import np_utils
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
@@ -8,7 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 from PIL import Image
 from imutils import paths
 import numpy as np
@@ -75,19 +77,33 @@ labels = le.fit_transform(labels)
 
 # perform a training and testing split, using 75% of the data for
 # training and 25% for evaluation
-(trainX, testX, trainY, testY) = train_test_split(data, labels,
-                                                  test_size=0.25)
+# (trainX, testX, trainY, testY) = train_test_split(data, labels, test_size=0.25)
+
+(trainX, trainY), (testX, testY) = mnist.load_data()
+num_pixels = trainX.shape[1] * trainX.shape[2]
+trainX = trainX.reshape((trainX.shape[0], num_pixels)).astype('float32')
+testX = testX.reshape((testX.shape[0], num_pixels)).astype('float32')
+
+trainX = trainX / 255
+testX = testX / 255
+
+trainY = np_utils.to_categorical(trainY)
+testY = np_utils.to_categorical(testY)
+num_classes = testY.shape[1]
 
 # (pdb) labels = le.fit_transform(labels)
 # (pdb) set(labels)
 # {0, 1, 2}
 
 print("[INFO] using '{}' model".format(args["model"]))
-model = models[args["model"]]
+model = models[args["model"]]  # args["model"]
 model.fit(trainX, trainY)
 
 # make predictions on our data and show a classification report
 print("[INFO] evaluating...")
 predictions = model.predict(testX)
-print(classification_report(testY, predictions,
-                            target_names=le.classes_))
+print(classification_report(testY, predictions))
+# , target_names=le.classes_
+
+matrix = confusion_matrix(testY.argmax(axis=1), predictions.argmax(axis=1))
+print(matrix)

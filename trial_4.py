@@ -62,10 +62,6 @@ model.add(Dropout(0.5))
 model.add(Dense(num_classes))
 model.add(Activation('softmax'))
 
-
-kVals = range(1, 30, 2)
-accuracies = []
-
 models = {
     "knn": KNeighborsClassifier(n_neighbors=1),
     "naive_bayes": GaussianNB(),
@@ -76,11 +72,14 @@ models = {
     "mlp": MLPClassifier()
 }
 
+kVals = range(1, 30, 2)
+accuracies = []
+
 print("[INFO] using '{}' model XXXX".format("XXX"))
 for k in range(1, 30, 2):
-    model = models["mlp"]
+    # model = models["knn"]
     # train the k-Nearest Neighbor classifier with the current value of `k`
-    # model = KNeighborsClassifier(n_neighbors=k)
+    model = KNeighborsClassifier(n_neighbors=k)
     model.fit(x_train, y_train)
     # evaluate the model and update the accuracies list
     score = model.score(x_test, y_test)

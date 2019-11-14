@@ -128,7 +128,7 @@ models = {
     "knn": KNeighborsClassifier(n_neighbors=1),
     "naive_bayes": GaussianNB(),
     "logit": LogisticRegression(solver="lbfgs", multi_class="auto"),  #
-    "svm": SVC(kernel="linear"),
+    "svm": SVC(kernel="poly", gamma="scale", probability=True),
     "decision_tree": DecisionTreeClassifier(),
     "random_forest": RandomForestClassifier(n_estimators=100),
     "mlp": MLPClassifier()

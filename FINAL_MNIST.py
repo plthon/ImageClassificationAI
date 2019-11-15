@@ -9,7 +9,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from sklearn import datasets
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, hamming_loss, jaccard_score, multilabel_confusion_matrix, \
@@ -40,6 +39,7 @@ mnist = MNIST('/home/plthon/PycharmProjects/ImageClassificationAI/dataset/MNIST/
 trainData, trainLabels = mnist.load_training()  # 60000 samples
 testData, testLabels = mnist.load_testing()     # 10000 samples
 
+"""
 # Concatenate to enable custom train size and test size for whatever purpose
 x = np.concatenate((trainData, testData))
 y = np.concatenate((trainLabels, testLabels))
@@ -48,6 +48,7 @@ train_size = 600    # Default: 60000
 test_size = 100     # Default: 10000
 trainData, testData, trainLabels, testLabels = train_test_split(x, y, train_size=train_size, test_size=test_size,
                                                                 random_state=42)
+"""
 
 # It is most common to use 32-bit precision when training a neural network, so at one point the training data will
 # have to be converted to 32 bit floats. Since the dataset fits easily in RAM, we might as well convert to float
@@ -68,16 +69,18 @@ print("Time used (seconds):", datetime.timedelta(seconds=time.time() - loadTime)
 models = {
     "knn": KNeighborsClassifier(n_neighbors=1),
     "naive_bayes": GaussianNB(),
-    "logit": LogisticRegression(solver="lbfgs", multi_class="auto"),
+    "logit": LogisticRegression(solver="lbfgs", multi_class="auto", max_iter=4000),
     "svm": SVC(kernel="poly", gamma="scale", probability=True),
     "decision_tree": DecisionTreeClassifier(),
     "random_forest": RandomForestClassifier(n_estimators=100),
     "mlp": MLPClassifier()
 }
 
+# for key in models:
+
 # TODO: Select models from selections above
 # chosenModel = args["model"]
-chosenModel = "logit"
+chosenModel = "decision_tree"
 
 print("\n[INFO] Using '{}' model".format(chosenModel))
 fitTime = time.time()

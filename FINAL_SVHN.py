@@ -58,7 +58,7 @@ print("Time used (seconds):", datetime.timedelta(seconds=time.time() - loadTime)
 models = {
     "knn": KNeighborsClassifier(n_neighbors=1),
     "naive_bayes": GaussianNB(),
-    "logit": LogisticRegression(solver="lbfgs", multi_class="auto"),  #
+    "logit": LogisticRegression(solver="lbfgs", multi_class="auto", max_iter=4000),  #
     "svm": SVC(kernel="poly", gamma="scale", probability=True),
     "decision_tree": DecisionTreeClassifier(),
     "random_forest": RandomForestClassifier(n_estimators=100),

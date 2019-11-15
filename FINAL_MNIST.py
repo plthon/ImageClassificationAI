@@ -1,7 +1,6 @@
 # import the necessary packages
 from __future__ import print_function
 
-import CustomMethods as CM
 import argparse
 import datetime
 import time
@@ -100,7 +99,12 @@ print("\n--- EVALUATION ON TESTING DATA ---")
 print("Classification Report:")
 print(classification_report(testLabels, predictions))
 print("\nConfusion Matrix:")
-CM.confusion_matrix_with_visual(testLabels, predictions)
+print(confusion_matrix(testLabels, predictions))
+sns.heatmap(confusion_matrix(testLabels, predictions), annot=True, lw=2, cbar=False)
+plt.ylabel("True Values")
+plt.xlabel("Predicted Values")
+plt.title("CONFUSSION MATRIX VISUALIZATION")
+plt.show()
 print("\nZero One Loss:", zero_one_loss(testLabels, predictions, normalize=False))
 print("\nHamming Loss:", hamming_loss(testLabels, predictions))
 print("\nJaccard Score:", jaccard_score(testLabels, predictions, average=None))

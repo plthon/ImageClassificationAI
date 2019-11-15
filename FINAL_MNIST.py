@@ -1,6 +1,7 @@
 # import the necessary packages
 from __future__ import print_function
 
+import CustomMethods as CM
 import argparse
 import datetime
 import time
@@ -39,6 +40,7 @@ loadTime = time.time()
 mnist = MNIST('/home/plthon/PycharmProjects/ImageClassificationAI/dataset/MNIST/')
 trainData, trainLabels = mnist.load_training()  # 60000 samples
 testData, testLabels = mnist.load_testing()     # 10000 samples
+
 # Concatenate to enable custom train size and test size for whatever purpose
 x = np.concatenate((trainData, testData))
 y = np.concatenate((trainLabels, testLabels))
@@ -47,6 +49,7 @@ train_size = 600    # Default: 60000
 test_size = 100     # Default: 10000
 trainData, testData, trainLabels, testLabels = train_test_split(x, y, train_size=train_size, test_size=test_size,
                                                                 random_state=42)
+
 # It is most common to use 32-bit precision when training a neural network, so at one point the training data will
 # have to be converted to 32 bit floats. Since the dataset fits easily in RAM, we might as well convert to float
 # immediately. (Aurélien 2018)
@@ -75,7 +78,7 @@ models = {
 
 # TODO: Select models from selections above
 # chosenModel = args["model"]
-chosenModel = "mlp"
+chosenModel = "logit"
 
 print("\n[INFO] Using '{}' model".format(chosenModel))
 fitTime = time.time()
@@ -97,12 +100,7 @@ print("\n--- EVALUATION ON TESTING DATA ---")
 print("Classification Report:")
 print(classification_report(testLabels, predictions))
 print("\nConfusion Matrix:")
-print(confusion_matrix(testLabels, predictions))
-sns.heatmap(confusion_matrix(testLabels, predictions), annot=True, lw=2, cbar=False)
-plt.ylabel("True Values")
-plt.xlabel("Predicted Values")
-plt.title("CONFUSSION MATRIX VISUALIZATION")
-plt.show()
+CM.confusion_matrix_with_visual(testLabels, predictions)
 print("\nZero One Loss:", zero_one_loss(testLabels, predictions, normalize=False))
 print("\nHamming Loss:", hamming_loss(testLabels, predictions))
 print("\nJaccard Score:", jaccard_score(testLabels, predictions, average=None))

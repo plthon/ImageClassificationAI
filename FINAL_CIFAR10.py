@@ -4,6 +4,7 @@ import os
 import platform
 import time
 
+import CustomMethods as CM
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -157,12 +158,7 @@ print("\n--- EVALUATION ON TESTING DATA ---")
 print("Classification Report:")
 print(classification_report(y_test, predictions))
 print("\nConfusion Matrix:")
-print(confusion_matrix(y_test, predictions))
-sns.heatmap(confusion_matrix(y_test, predictions), annot=True, lw=2, cbar=False)
-plt.ylabel("True Values")
-plt.xlabel("Predicted Values")
-plt.title("CONFUSSION MATRIX VISUALIZATION")
-plt.show()
+CM.confusion_matrix_with_visual(y_test, predictions)
 print("\nZero One Loss:", zero_one_loss(y_test, predictions, normalize=False))
 print("\nHamming Loss:", hamming_loss(y_test, predictions))
 print("\nJaccard Score:", jaccard_score(y_test, predictions, average=None))

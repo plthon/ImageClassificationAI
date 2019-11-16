@@ -2,6 +2,7 @@ import argparse
 import datetime
 import time
 
+import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io
 import seaborn as sns
@@ -35,23 +36,36 @@ train_data = scipy.io.loadmat('dataset/train_32x32.mat')
 # extract the images and labels from the dictionary object
 X = train_data['X']
 y = train_data['y']
+
+"""
 # view an image (e.g. 25) and print its corresponding label
-img_index = 9
+img_index = 90
 plt.imshow(X[:, :, :, img_index])
 plt.show()
 print(y[img_index])
+"""
 
 X = X.reshape(X.shape[0] * X.shape[1] * X.shape[2], X.shape[3]).T
 y = y.reshape(y.shape[0], )
 X, y = shuffle(X, y, random_state=42)
 print(X.shape)
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=500, test_size=100, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+X_train = np.asarray(X_train).astype(np.float32)
+y_train = np.asarray(y_train).astype(np.int32)
+X_test = np.asarray(X_test).astype(np.float32)
+y_test = np.asarray(y_test).astype(np.int32)
 
 print('Train data shape: ', X_train.shape)
 print('Train labels shape: ', y_train.shape)
 print('Test data shape: ', X_test.shape)
 print('Test labels shape: ', y_test.shape)
 print("Time used (seconds):", datetime.timedelta(seconds=time.time() - loadTime))
+
+x = np.random.normal(size=1000)
+plt.hist(y_train, bins=30)  # density
+plt.ylabel('Frequency')
+plt.show()
 # ---------------------------------------------------------------------------------------------------------------------
 
 # --- TRAINING --------------------------------------------------------------------------------------------------------
@@ -66,7 +80,7 @@ models = {
 }
 
 # chosenModel = args["model"]
-chosenModel = "knn"
+chosenModel = "svm"
 
 print("\n[INFO] Using '{}' model".format(chosenModel))
 fitTime = time.time()

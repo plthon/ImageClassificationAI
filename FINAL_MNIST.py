@@ -37,15 +37,15 @@ loadTime = time.time()
 # TODO: Change the path to appropriate path on your device
 mnist = MNIST('/home/plthon/PycharmProjects/ImageClassificationAI/dataset/MNIST/')
 trainData, trainLabels = mnist.load_training()  # 60000 samples
-testData, testLabels = mnist.load_testing()     # 10000 samples
+testData, testLabels = mnist.load_testing()  # 10000 samples
 
 """
 # Concatenate to enable custom train size and test size for whatever purpose
 x = np.concatenate((trainData, testData))
 y = np.concatenate((trainLabels, testLabels))
 # TODO: Smaller train size and test size, faster program execution, lower accuracy score
-train_size = 600    # Default: 60000
-test_size = 100     # Default: 10000
+train_size = 6000    # Default: 60000
+test_size = 1000     # Default: 10000
 trainData, testData, trainLabels, testLabels = train_test_split(x, y, train_size=train_size, test_size=test_size,
                                                                 random_state=42)
 """
@@ -61,6 +61,11 @@ testLabels = np.asarray(testLabels).astype(np.int32)
 print("Training data points: {}".format(len(trainLabels)))
 print("Testing data points: {}".format(len(testLabels)))
 print("Time used (seconds):", datetime.timedelta(seconds=time.time() - loadTime))
+
+x = np.random.normal(size=1000)
+plt.hist(trainLabels, bins=30)  # density
+plt.ylabel('Frequency')
+plt.show()
 # ---------------------------------------------------------------------------------------------------------------------
 
 # --- TRAINING --------------------------------------------------------------------------------------------------------
@@ -76,48 +81,51 @@ models = {
     "mlp": MLPClassifier()
 }
 
-# for key in models:
+for key in models:
 
-# TODO: Select models from selections above
-# chosenModel = args["model"]
-chosenModel = "decision_tree"
+    # TODO: Select models from selections above
+    # chosenModel = args["model"]
+    chosenModel = key
 
-print("\n[INFO] Using '{}' model".format(chosenModel))
-fitTime = time.time()
-model = models[chosenModel]
-model.fit(trainData, trainLabels)
-print("Time used (seconds):", datetime.timedelta(seconds=time.time() - fitTime))
-# ---------------------------------------------------------------------------------------------------------------------
+    print("\n[INFO] Using '{}' model".format(chosenModel))
+    fitTime = time.time()
+    model = models[chosenModel]
+    model.fit(trainData, trainLabels)
+    print("Time used (seconds):", datetime.timedelta(seconds=time.time() - fitTime))
+    # ---------------------------------------------------------------------------------------------------------------------
 
-# --- Evaluation ------------------------------------------------------------------------------------------------------
-print("\n[INFO] Evaluating...")
-preditTime = time.time()
-predictions = model.predict(testData)
-predictions2 = model.predict_proba(testData)
-print("Time used (seconds):", datetime.timedelta(seconds=time.time() - preditTime))
+    # --- Evaluation ------------------------------------------------------------------------------------------------------
+    print("\n[INFO] Evaluating...")
+    preditTime = time.time()
+    predictions = model.predict(testData)
+    predictions2 = model.predict_proba(testData)
+    print("Time used (seconds):", datetime.timedelta(seconds=time.time() - preditTime))
 
-# show a final classification report demonstrating the accuracy of the classifier
-# for each of the digits
-print("\n--- EVALUATION ON TESTING DATA ---")
-print("Classification Report:")
-print(classification_report(testLabels, predictions))
-print("\nConfusion Matrix:")
-print(confusion_matrix(testLabels, predictions))
-sns.heatmap(confusion_matrix(testLabels, predictions), annot=True, lw=2, cbar=False)
-plt.ylabel("True Values")
-plt.xlabel("Predicted Values")
-plt.title("CONFUSSION MATRIX VISUALIZATION")
-plt.show()
-print("\nZero One Loss:", zero_one_loss(testLabels, predictions, normalize=False))
-print("\nHamming Loss:", hamming_loss(testLabels, predictions))
-print("\nJaccard Score:", jaccard_score(testLabels, predictions, average=None))
-print("\nMultiLabel Confusion Matrix:")
-print(multilabel_confusion_matrix(testLabels, predictions))
-# print("\nAverage Precision Score:", average_precision_score(testLabels, predictions2))
-print("\nLog Loss:", log_loss(testLabels, predictions2))
-# print("\nRoc Auc Score:", roc_auc_score(testLabels, predictions2))
-# print("\nCoverage Error:", coverage_error(testLabels, predictions2))
+    # show a final classification report demonstrating the accuracy of the classifier
+    # for each of the digits
+    print("\n--- EVALUATION ON TESTING DATA ---" + " " + chosenModel)
+    print("Classification Report:")
+    print(classification_report(testLabels, predictions))
+    print("\nConfusion Matrix:")
+    C = confusion_matrix(testLabels, predictions)
+    C = C / C.astype(np.float).sum(axis=1)
+    print(C)
+    sns.heatmap(C, annot=True, lw=2, cbar=False)
+    plt.ylabel("True Values")
+    plt.xlabel("Predicted Values")
+    plt.title("CONFUSSION MATRIX VISUALIZATION" + " " + chosenModel)
+    plt.show()
+    print("\nZero One Loss:", zero_one_loss(testLabels, predictions, normalize=False))
+    print("\nHamming Loss:", hamming_loss(testLabels, predictions))
+    print("\nJaccard Score:", jaccard_score(testLabels, predictions, average=None))
+    print("\nMultiLabel Confusion Matrix:")
+    print(multilabel_confusion_matrix(testLabels, predictions))
+    # print("\nAverage Precision Score:", average_precision_score(testLabels, predictions2))
+    print("\nLog Loss:", log_loss(testLabels, predictions2))
+    # print("\nRoc Auc Score:", roc_auc_score(testLabels, predictions2))
+    # print("\nCoverage Error:", coverage_error(testLabels, predictions2))
 
+"""
 print()
 # loop over a few random digits
 for i in np.random.randint(0, high=len(testLabels), size=(5,)):
@@ -132,6 +140,7 @@ for i in np.random.randint(0, high=len(testLabels), size=(5,)):
     print("I think tha digit is : {}".format(prediction))
     plt.show()
     cv2.waitKey(0)
+"""
 
 # Show total time program execution.
 print("\n\n\nTotal Time Taken:", datetime.timedelta(seconds=time.time() - startTime))

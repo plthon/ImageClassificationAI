@@ -109,18 +109,23 @@ print('Test data shape: ', x_test.shape)
 print('Test labels shape: ', y_test.shape)
 print("Time used (seconds):", datetime.timedelta(seconds=time.time() - loadTime))
 
+x = np.random.normal(size=1000)
+plt.hist(y_train, bins=30)  # density
+plt.ylabel('Frequency')
+plt.show()
+
+"""
 # visualizing train sample
 temp = x_test[91]
-
 # Since every row represents one example to re-map it to image we have to form three 32,32 matrix,
 # representing RGB values
-
 R = temp[0:1024].reshape(32, 32)
 G = np.reshape(temp[1024:2048], newshape=(32, 32))
 B = np.reshape(temp[2048:], newshape=(32, 32))
 temp = np.dstack((R, G, B))  # for stacking all these 32,32 matrices.
 plt.imshow(temp)
 plt.show()
+"""
 # ---------------------------------------------------------------------------------------------------------------------
 
 # --- TRAINING --------------------------------------------------------------------------------------------------------

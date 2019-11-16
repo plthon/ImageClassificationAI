@@ -112,6 +112,7 @@ print('Test data shape: ', x_test.shape)
 print('Test labels shape: ', y_test.shape)
 print("Time used (seconds):", datetime.timedelta(seconds=time.time() - loadTime))
 
+
 def grayscale(data, dtype='float32'):
     # luma coding weighted average in video systems
     r, g, b = np.asarray(.3, dtype=dtype), np.asarray(.59, dtype=dtype), np.asarray(.11, dtype=dtype)
@@ -119,6 +120,7 @@ def grayscale(data, dtype='float32'):
     # add channel dimension
     rst = np.expand_dims(rst, axis=3)
     return rst
+
 
 X_train_gray = grayscale(x_train)
 X_test_gray = grayscale(x_test)

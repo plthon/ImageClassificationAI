@@ -7,7 +7,6 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from keras.utils import np_utils
 from six.moves import cPickle as pickle
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -34,116 +33,100 @@ classes = ('plane', 'car', 'bird', 'cat',
 img_rows, img_cols = 32, 32
 input_shape = (img_rows, img_cols, 3)
 
-# dataset path
-home = os.path.expanduser('~')
-data_path = os.path.join(home, "data/CIFAR-10/")
-data_url = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
 
-# CIFAR-10 constants
-img_size = 32
-img_channels = 3
-nb_classes = 10
-# length of the image after we flatten the image into a 1-D array
-img_size_flat = img_size * img_size * img_channels
-nb_files_train = 5
-images_per_file = 10000
-# number of all the images in the training dataset
-nb_images_train = nb_files_train * images_per_file
+def load_pickle(f):
+    version = platform.python_version_tuple()
+    if version[0] == '2':
+        return pickle.load(f)
+    elif version[0] == '3':
+        return pickle.load(f, encoding='latin1')
+    raise ValueError("invalid python version: {}".format(version))
 
 
-def load_data(file_name):
-    file_path = '/home/plthon/PycharmProjects/ImageClassificationAI/dataset/cifar-10-batches-py/' + file_name
-
-    print('Loading ' + file_name)
-    with open(file_path, mode='rb') as file:
-        data = pickle.load(file, encoding='bytes')
-    raw_images = data[b'data']
-    cls = np.array(data[b'labels'])
-
-    images = raw_images.reshape([-1, img_channels, img_size, img_size])
-    # move the channel dimension to the last
-    images = np.rollaxis(images, 1, 4)
-
-    return images, cls
+def load_CIFAR_batch(filename):
+    """ load single batch of cifar """
+    with open(filename, 'rb') as f:
+        datadict = load_pickle(f)
+        X = datadict['data']
+        Y = datadict['labels']
+        X = X.reshape(10000, 3072)
+        Y = np.array(Y)
+        return X, Y
 
 
-def load_training_data():
-    # pre-allocate the arrays for the images and class-numbers for efficiency.
-    images = np.zeros(shape=[nb_images_train, img_size, img_size, img_channels],
-                      dtype=int)
-    cls = np.zeros(shape=[nb_images_train], dtype=int)
-
-    begin = 0
-    for i in range(nb_files_train):
-        images_batch, cls_batch = load_data(file_name="data_batch_" + str(i + 1))
-        num_images = len(images_batch)
-        end = begin + num_images
-        images[begin:end, :] = images_batch
-        cls[begin:end] = cls_batch
-        begin = end
-
-    return images, np_utils.to_categorical(cls, nb_classes)
+def load_CIFAR10(ROOT):
+    """ load all of cifar """
+    xs = []
+    ys = []
+    for b in range(1, 6):
+        f = os.path.join(ROOT, 'data_batch_%d' % (b,))
+        X, Y = load_CIFAR_batch(f)
+        xs.append(X)
+        ys.append(Y)
+    Xtr = np.concatenate(xs)
+    Ytr = np.concatenate(ys)
+    del X, Y
+    Xte, Yte = load_CIFAR_batch(os.path.join(ROOT, 'test_batch'))
+    return Xtr, Ytr, Xte, Yte
 
 
-def load_test_data():
-    images, cls = load_data(file_name="test_batch")
+def get_CIFAR10_data(num_training=5000, num_validation=0, num_test=1000):
+    # Load the raw CIFAR-10 data
+    # TODO: Change the path to appropriate path on your device
+    cifar10_dir = '/home/plthon/PycharmProjects/ImageClassificationAI/dataset/cifar-10-batches-py/'
+    X_train, y_train, X_test, y_test = load_CIFAR10(cifar10_dir)
 
-    return images, np_utils.to_categorical(cls, nb_classes)
+    mask = range(num_training)
+    X_train = X_train[mask]
+    y_train = y_train[mask]
+    mask = range(num_test)
+    X_test = X_test[mask]
+    y_test = y_test[mask]
 
+    x_train = X_train.astype('float32')
+    x_test = X_test.astype('float32')
 
-def load_cifar():
-    X_train, Y_train = load_training_data()
-    X_test, Y_test = load_test_data()
+    x_train /= 255
+    x_test /= 255
 
-    return X_train, Y_train, X_test, Y_test
-
+    return x_train, y_train, x_test, y_test
 
 # --- DATA PREPARATION & PREPROCESSING --------------------------------------------------------------------------------
 print("[INFO] Loading data...")
 loadTime = time.time()
 # Invoke the above function to get our data.
-x_train, y_train, x_test, y_test = load_cifar()
+x_train, y_train, x_test, y_test = get_CIFAR10_data()
 
 print('Train data shape: ', x_train.shape)
 print('Train labels shape: ', y_train.shape)
-# print('Validation data shape: ', x_val.shape)
-# print('Validation labels shape: ', y_val.shape)
 print('Test data shape: ', x_test.shape)
 print('Test labels shape: ', y_test.shape)
 print("Time used (seconds):", datetime.timedelta(seconds=time.time() - loadTime))
 
-
-def grayscale(data, dtype='float32'):
-    # luma coding weighted average in video systems
-    r, g, b = np.asarray(.3, dtype=dtype), np.asarray(.59, dtype=dtype), np.asarray(.11, dtype=dtype)
-    rst = r * data[:, :, :, 0] + g * data[:, :, :, 1] + b * data[:, :, :, 2]
-    # add channel dimension
-    rst = np.expand_dims(rst, axis=3)
-    return rst
-
-
-X_train_gray = grayscale(x_train)
-X_test_gray = grayscale(x_test)
-
-# now we have only one channel in the images
-img_channels = 1
-
-# plot a randomly chosen image
-img = 64
-plt.figure(figsize=(4, 2))
-plt.subplot(1, 2, 1)
-plt.imshow(x_train[img], interpolation='none')
-plt.subplot(1, 2, 2)
-plt.imshow(X_train_gray[img, :, :, 0], cmap=plt.get_cmap('gray'), interpolation='none')
+plt.hist(y_train, bins=30)  # density
+plt.ylabel('Frequency')
 plt.show()
+
+"""
+# visualizing train sample
+temp = x_test[91]
+# Since every row represents one example to re-map it to image we have to form three 32,32 matrix,
+# representing RGB values
+R = temp[0:1024].reshape(32, 32)
+G = np.reshape(temp[1024:2048], newshape=(32, 32))
+B = np.reshape(temp[2048:], newshape=(32, 32))
+temp = np.dstack((R, G, B))  # for stacking all these 32,32 matrices.
+plt.imshow(temp)
+plt.show()
+"""
 # ---------------------------------------------------------------------------------------------------------------------
 
 # --- TRAINING --------------------------------------------------------------------------------------------------------
 models = {
     "knn": KNeighborsClassifier(n_neighbors=1),
     "naive_bayes": GaussianNB(),
-    "logit": LogisticRegression(solver="lbfgs", multi_class="auto"),  #
-    "svm": SVC(kernel="poly"),
+    "logit": LogisticRegression(solver="lbfgs", multi_class="auto", max_iter=4000),  #
+    "svm": SVC(kernel="poly", gamma="scale", probability=True),
     "decision_tree": DecisionTreeClassifier(),
     "random_forest": RandomForestClassifier(n_estimators=100),
     "mlp": MLPClassifier()

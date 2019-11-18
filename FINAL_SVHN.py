@@ -49,7 +49,8 @@ X = X.reshape(X.shape[0] * X.shape[1] * X.shape[2], X.shape[3]).T
 y = y.reshape(y.shape[0], )
 X, y = shuffle(X, y, random_state=42)
 print(X.shape)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=60000, test_size=10000, random_state=42)
 
 X_train = np.asarray(X_train).astype(np.float32)
 y_train = np.asarray(y_train).astype(np.int32)
@@ -62,7 +63,6 @@ print('Test data shape: ', X_test.shape)
 print('Test labels shape: ', y_test.shape)
 print("Time used (seconds):", datetime.timedelta(seconds=time.time() - loadTime))
 
-x = np.random.normal(size=1000)
 plt.hist(y_train, bins=30)  # density
 plt.ylabel('Frequency')
 plt.show()

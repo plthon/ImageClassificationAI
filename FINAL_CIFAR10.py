@@ -109,7 +109,6 @@ print('Test data shape: ', x_test.shape)
 print('Test labels shape: ', y_test.shape)
 print("Time used (seconds):", datetime.timedelta(seconds=time.time() - loadTime))
 
-x = np.random.normal(size=1000)
 plt.hist(y_train, bins=30)  # density
 plt.ylabel('Frequency')
 plt.show()

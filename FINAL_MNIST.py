@@ -43,12 +43,15 @@ testData, testLabels = mnist.load_testing()  # 10000 samples
 # Concatenate to enable custom train size and test size for whatever purpose
 x = np.concatenate((trainData, testData))
 y = np.concatenate((trainLabels, testLabels))
+"""
 # TODO: Smaller train size and test size, faster program execution, lower accuracy score
 train_size = 6000    # Default: 60000
 test_size = 1000     # Default: 10000
 trainData, testData, trainLabels, testLabels = train_test_split(x, y, train_size=train_size, test_size=test_size,
                                                                 random_state=42)
+"""
 
+print(x.itemsize)
 
 # It is most common to use 32-bit precision when training a neural network, so at one point the training data will
 # have to be converted to 32 bit floats. Since the dataset fits easily in RAM, we might as well convert to float
@@ -82,7 +85,7 @@ models = {
 
 # TODO: Select models from selections above
 # chosenModel = args["model"]
-chosenModel = "svm"
+chosenModel = "random_forest"
 
 print("\n[INFO] Using '{}' model".format(chosenModel))
 fitTime = time.time()

@@ -50,7 +50,7 @@ y = y.reshape(y.shape[0], )
 X, y = shuffle(X, y, random_state=42)
 print(X.shape)
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=60000, test_size=10000, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=6000, test_size=1000, random_state=42)
 
 X_train = np.asarray(X_train).astype(np.float32)
 y_train = np.asarray(y_train).astype(np.int32)
@@ -80,7 +80,7 @@ models = {
 }
 
 # chosenModel = args["model"]
-chosenModel = "svm"
+chosenModel = "naive_bayes"
 
 print("\n[INFO] Using '{}' model".format(chosenModel))
 fitTime = time.time()

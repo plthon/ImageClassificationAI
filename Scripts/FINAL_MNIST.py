@@ -23,7 +23,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 startTime = time.time()
 
-# --- You wont use this. --- Redundant codes. -------------------------------------------------------------------------
+# ------
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", type=str, default="knn",
                 help="type of python machine learning model to use")
